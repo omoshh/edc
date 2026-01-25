@@ -1,0 +1,2 @@
+fastapi[standard]
+psutil==5.9.8
