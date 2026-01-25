@@ -1,5 +1,5 @@
 import fastapi
-import utils
+from backend import utils
 
 app = fastapi.FastAPI()
 
@@ -9,16 +9,12 @@ def read_root():
     mem = utils.get_mem()
     load_av = utils.get_average()
     network = utils.get_bandwidth()
-    date = utils.get_date()
-    time = utils.get_time()
+    datetime = utils.get_now()
 
     return {
-        "date": date,
-        "time": time,
-        "cpu_average": cp_av,
+        "datetime": datetime,
+        "cpu_usage": cp_av,
         "memory_usage": mem,
         "load_average": load_av,
-        "network_bandwidth": network
+        "network_bandwidth": network,
     }
-
-# request os (load_av doesn't support windows)a

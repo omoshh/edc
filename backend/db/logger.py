@@ -1,5 +1,5 @@
 from datebase import get_conn
-import utils
+from backend import utils
 import schedule
 import time
 from datetime import datetime
@@ -22,10 +22,9 @@ def job():
     except Exception as e:
         print(f"Logging failed: {e}")
     
-
+print("logger starting... waiting for first minute")
 schedule.every(1).minutes.do(job)
 
 while True:
-    print("logger starting... waiting for first minute")
     schedule.run_pending()
     time.sleep(1)

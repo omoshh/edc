@@ -12,9 +12,9 @@ def get_mem():
 
 # this is macOS/Linux only
 def get_average():
-    l1 = psutil.getloadavg()[1]
+    l1 = psutil.getloadavg()[0]
     cpu_usage = (l1 / os.cpu_count()) * 100
-    return cpu_usage
+    return round(cpu_usage, 2)
 
 def get_bandwidth():
     old_value = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
@@ -22,10 +22,7 @@ def get_bandwidth():
     new_value = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
     bandwidth_bytes = new_value - old_value
     mbps = (bandwidth_bytes * 8) / 10**6
-    return mbps
+    return round(mbps, 3)
 
-def get_time():
-    return datetime.now().strftime("%H:%M")
-
-def get_date():
-    return datetime.now().strftime("%Y-%m-%d")
+def get_now():
+    return datetime.now()
