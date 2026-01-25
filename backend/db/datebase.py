@@ -1,7 +1,9 @@
 import psycopg
 from psycopg.rows import dict_row
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 DB_URL = f"host={os.getenv('DB_HOST')} dbname={os.getenv('DB_NAME')} user={os.getenv('DB_USER')} password={os.getenv('DB_PASS')}"
 
 def get_conn():

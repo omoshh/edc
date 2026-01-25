@@ -1,2 +1,5 @@
 fastapi[standard]
-psutil==5.9.8
+psutil[standard]    # for getting metrics
+psycopg[binary]     # postgresql
+schedule[standard]  # for logging into db
+dotenv[standard]    # managing .env file
