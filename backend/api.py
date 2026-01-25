@@ -1,6 +1,6 @@
 import fastapi
 from backend import utils
-from db.datebase import get_conn, get_name
+from .db.datebase import get_conn, get_name
 
 app = fastapi.FastAPI()
 

@@ -3,15 +3,15 @@ import pandas as pd
 import plotly
 from backend import api
 import requests
-from streamlit_autorefresh import st_autorefresh
+import datetime
 
 st.set_page_config(page_title="System Metrics", layout="wide")
 
 REFRESH_OPTIONS = {
-    "5s": 5000,
-    "10s": 10000,
-    "30s": 30000,
-    "1m": 60000
+    "5s": 5,
+    "10s": 10,
+    "30s": 30,
+    "1m": 60
 }
 
 with st.sidebar:
@@ -36,58 +36,67 @@ def get_metrics():
         st.error(f"Failed to fetch data: {e}")
         return pd.DataFrame()
 
-
 # main ui
-st.header("Current system metrics:")
-# refresh metrics every 5 seconds
-count = st_autorefresh(interval=freq_ms, key="metrics_refresh")
-df = get_metrics()
-if not df.empty:
-    col1, col2, col3, col4 = st.columns(4)
-    latest = df.iloc[0] 
+@st.fragment(run_every=freq_ms)
+def metrics():
+    st.header("Current system metrics:")
+    # refresh metrics every 5 seconds
+    df = get_metrics()
+    if not df.empty:
+        col1, col2, col3, col4 = st.columns(4)
+        latest = df.iloc[0] 
 
-    col1.metric(label="CPU", value=f"{latest['cpu_usage']}%")
-    col2.metric(label="Memory", value=f"{latest['memory_usage']}%")
-    col3.metric(label="Load Average", value=f"{latest['load_average']}%")
-    col4.metric(label="Network Bandwidth", value=f"{latest['network_bandwidth']}Mb/s")
-    d1, = st.columns(1)
-    time_string = latest['datetime'].strftime("%H:%M:%S")
-    d1.metric(label="Measured at", value=time_string)
-    st.dataframe(df, width="stretch", hide_index=True, 
-        column_config={ 
-                "datetime":
-                st.column_config.DatetimeColumn(
-                    "Time",
-                    format="DD-MM-YYYY, HH:mm:ss",
-                ),
-                "cpu_usage": 
-                st.column_config.ProgressColumn(
-                    "CPU Load",
-                    help="System CPU usage percentage",
-                    format="%f%%",
-                    min_value=0,
-                    max_value=100,
-                    color="orange"
-                ),
-                "memory_usage": st.column_config.ProgressColumn(
-                    "RAM Usage",
-                    format="%f%%",
-                    min_value=0,
-                    max_value=100,
-                    color="yellow"
-                ),
-                "load_average": st.column_config.ProgressColumn(
-                    "Load Average",
-                    help="Load average over last 1 minute",
-                    format="%f%%",
-                    min_value=0,
-                    max_value=100,
-                ),
-                "network_bandwidth": st.column_config.NumberColumn(
-                    "Network Bandwidth",
-                    format="%f MBps",
-                )
-    })
-else:
-    st.warning("No data available. Check if the backend is running.")
-# st.write(df.iloc[0]['cpu_average']) access to 0th entry in table
+        col1.metric(label="CPU", value=f"{latest['cpu_usage']}%")
+        col2.metric(label="Memory", value=f"{latest['memory_usage']}%")
+        col3.metric(label="Load Average", value=f"{latest['load_average']}%")
+        col4.metric(label="Network Bandwidth", value=f"{latest['network_bandwidth']}Mb/s")
+        d1, = st.columns(1)
+        time_string = latest['datetime'].strftime("%H:%M:%S")
+        d1.metric(label="Measured at", value=time_string)
+        st.dataframe(df, width="stretch", hide_index=True, 
+            column_config={ 
+                    "datetime":
+                    st.column_config.DatetimeColumn(
+                        "Time",
+                        format="DD-MM-YYYY, HH:mm:ss",
+                    ),
+                    "cpu_usage": 
+                    st.column_config.ProgressColumn(
+                        "CPU Load",
+                        help="System CPU usage percentage",
+                        format="%f%%",
+                        min_value=0,
+                        max_value=100,
+                        color="orange"
+                    ),
+                    "memory_usage": st.column_config.ProgressColumn(
+                        "RAM Usage",
+                        format="%f%%",
+                        min_value=0,
+                        max_value=100,
+                        color="yellow"
+                    ),
+                    "load_average": st.column_config.ProgressColumn(
+                        "Load Average",
+                        help="Load average over last 1 minute",
+                        format="%f%%",
+                        min_value=0,
+                        max_value=100,
+                    ),
+                    "network_bandwidth": st.column_config.NumberColumn(
+                        "Network Bandwidth",
+                        format="%f MBps",
+                    )
+        })
+    else:
+        st.warning("No data available. Check if the backend is running.")
+metrics()
+
+st.divider()
+left_col, right_col = st.columns(2)
+with left_col:  
+    start = st.datetime_input("Choose start", value=None, format="DD/MM/YYYY")
+with right_col:
+    end = st.datetime_input("Choose end", value=None, format="DD/MM/YYYY")
+if start != None and end != None:
+    st.write("Choosen interval is from ", start, " to ", end)
