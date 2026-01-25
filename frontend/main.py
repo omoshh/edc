@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly
-from backend import api
 import requests
 import datetime
 
@@ -53,50 +52,20 @@ def metrics():
         d1, = st.columns(1)
         time_string = latest['datetime'].strftime("%H:%M:%S")
         d1.metric(label="Measured at", value=time_string)
-        st.dataframe(df, width="stretch", hide_index=True, 
-            column_config={ 
-                    "datetime":
-                    st.column_config.DatetimeColumn(
-                        "Time",
-                        format="DD-MM-YYYY, HH:mm:ss",
-                    ),
-                    "cpu_usage": 
-                    st.column_config.ProgressColumn(
-                        "CPU Load",
-                        help="System CPU usage percentage",
-                        format="%f%%",
-                        min_value=0,
-                        max_value=100,
-                        color="orange"
-                    ),
-                    "memory_usage": st.column_config.ProgressColumn(
-                        "RAM Usage",
-                        format="%f%%",
-                        min_value=0,
-                        max_value=100,
-                        color="yellow"
-                    ),
-                    "load_average": st.column_config.ProgressColumn(
-                        "Load Average",
-                        help="Load average over last 1 minute",
-                        format="%f%%",
-                        min_value=0,
-                        max_value=100,
-                    ),
-                    "network_bandwidth": st.column_config.NumberColumn(
-                        "Network Bandwidth",
-                        format="%f MBps",
-                    )
-        })
     else:
         st.warning("No data available. Check if the backend is running.")
 metrics()
 
 st.divider()
+st.header("Request metrics from a time interval:")
 left_col, right_col = st.columns(2)
 with left_col:  
     start = st.datetime_input("Choose start", value=None, format="DD/MM/YYYY")
 with right_col:
-    end = st.datetime_input("Choose end", value=None, format="DD/MM/YYYY")
-if start != None and end != None:
-    st.write("Choosen interval is from ", start, " to ", end)
+    end = st.datetime_input("Choose end", value=None, format="DD/MM/YYYY", max_value="now")
+
+if st.button("Sumbit", type="primary"):
+    if start != None and end != None:
+        st.write("Choosen interval is from ", start, " to ", end)
+    else:
+        st.warning("Select dates.")

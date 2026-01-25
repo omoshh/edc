@@ -1,34 +1,36 @@
 import fastapi
 from backend import utils
-from .db.datebase import get_conn, get_name
+from .db.database import get_conn, get_name
 
 app = fastapi.FastAPI()
 
 @app.get("/metrics")
 def get_metrics():
-    cp_av = utils.get_cpu()
-    mem = utils.get_mem()
-    load_av = utils.get_average()
-    network = utils.get_bandwidth()
-    datetime = utils.get_now()
-
-    return {
-        "datetime": datetime,
-        "cpu_usage": cp_av,
-        "memory_usage": mem,
-        "load_average": load_av,
-        "network_bandwidth": network,
-    }
+    name = get_name()
+    query = f"""
+                SELECT * FROM {name} 
+                ORDER BY timestamp DESC 
+                LIMIT 1
+            """
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                return cur.fetchone()
+    except Exception as e:
+        print(f"Database error: {e}")
+        return None
 
 @app.get("/metrics/range")
 def get_metrics_range(start: str, end: str):
     table = get_name()
-    conn = get_conn()
-    cursor = conn.cursor()
-    query = f"SELECT * FROM {table} WHERE timestamp BETWEEN ? AND ?"
-    cursor.execute(query, (start, end))
-    
-    data = cursor.fetchall()
-    conn.close()
-    
-    return {"data": data}
+    query = f"SELECT * FROM {table} WHERE timestamp BETWEEN %s AND %s ORDER BY timestamp ASC"
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (start, end))
+                data = cursor.fetchall()
+                return {"data": data}
+    except Exception as e:
+        print(f"Database error: {e}")
+        return None

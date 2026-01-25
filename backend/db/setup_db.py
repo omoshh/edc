@@ -1,6 +1,6 @@
 import psycopg
 import time
-from datebase import get_conn, get_name
+from backend.db.database import get_conn, get_name
 
 def init_db():
     table_name = get_name()
