@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly
-import numpy as np
 from backend import api
 import requests
 from streamlit_autorefresh import st_autorefresh
@@ -28,7 +27,7 @@ with st.sidebar:
 # get metrics from API
 def get_metrics():
     try:
-        response = requests.get("http://localhost:8000/app")
+        response = requests.get("http://localhost:8000/metrics")
         response.raise_for_status() 
         df = pd.DataFrame([response.json()])
         df['datetime'] = pd.to_datetime(df['datetime'])

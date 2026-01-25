@@ -1,21 +1,23 @@
 import psycopg
 import time
-from datebase import get_conn
+from datebase import get_conn, get_name
 
 def init_db():
+    table_name = get_name()
+    q = f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                cpu_usage FLOAT NOT NULL,
+                ram_usage FLOAT NOT NULL,
+                load_average FLOAT NOT NULL,
+                network_bandwidth FLOAT NOT NULL,
+                timestamp TIMESTAMPTZ DEFAULT NOW()
+                );
+        """
     for i in range(10):
         try:
             with get_conn() as conn:
                 with conn.cursor() as cur:
-                    cur.execute("""
-                        CREATE TABLE IF NOT EXISTS system_metrics (
-                            cpu_usage FLOAT NOT NULL,
-                            ram_usage FLOAT NOT NULL,
-                            load_average FLOAT NOT NULL,
-                            network_bandwidth FLOAT NOT NULL,
-                            created_at TIMESTAMPTZ DEFAULT NOW()
-                        );
-                    """)
+                    cur.execute(q)
                     print("Table created successfully!")
                 return 
         except psycopg.OperationalError:

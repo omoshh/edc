@@ -3,7 +3,9 @@ psutil[standard]    # for getting metrics
 psycopg[binary]     # postgresql
 schedule[standard]  # for logging into db
 dotenv[standard]    # managing .env file
-streamlit[standard] # frond-end
+
+# frond-end
+streamlit[standard] 
 pandas[standard]
 plotly[standard]
 streamlit-autorefresh[standard]
