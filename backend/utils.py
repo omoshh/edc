@@ -1,6 +1,7 @@
 import psutil
 import os
 import time
+from datetime import datetime
 
 # CPU Memory Load Avarage Network Bandwith 
 def get_cpu(wait_interval = 0.5):
@@ -22,3 +23,9 @@ def get_bandwidth():
     bandwidth_bytes = new_value - old_value
     mbps = (bandwidth_bytes * 8) / 10**6
     return mbps
+
+def get_time():
+    return datetime.now().strftime("%H:%M")
+
+def get_date():
+    return datetime.now().strftime("%Y-%m-%d")

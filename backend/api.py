@@ -9,9 +9,12 @@ def read_root():
     mem = utils.get_mem()
     load_av = utils.get_average()
     network = utils.get_bandwidth()
-    # add time ?
+    date = utils.get_date()
+    time = utils.get_time()
 
     return {
+        "date": date,
+        "time": time,
         "cpu_average": cp_av,
         "memory_usage": mem,
         "load_average": load_av,
