@@ -44,7 +44,7 @@ def get_metrics():
         response = requests.get(ENV_VARS['metrics_api'])
         response.raise_for_status() 
         df = pd.DataFrame([response.json()])
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_localize(None)
         return df
     except Exception as e:
         st.error(f"Failed to fetch data: {e}")
@@ -129,7 +129,7 @@ if st.session_state.df_metrics is not None and not st.session_state.df_metrics.e
                          column_config={
                              "timestamp" : st.column_config.DatetimeColumn(
                                 "Time",
-                                format="DD.MM.YYYY, HH:MM"
+                                format="DD.MM.YYYY, HH:mm"
                              )
                          })
     else:
