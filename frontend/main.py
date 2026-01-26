@@ -96,7 +96,7 @@ st.divider()
 st.header("Request metrics from a time interval:")
 left_col, right_col = st.columns(2)
 with left_col:  
-    today_midnight = datetime.datetime.now(datetime.timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_midnight = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start = st.datetime_input("Choose start", value=today_midnight, format="DD.MM.YYYY", max_value="now")
 with right_col:
     end = st.datetime_input("Choose end", value="now", format="DD.MM.YYYY", max_value="now")

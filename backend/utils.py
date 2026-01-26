@@ -1,7 +1,6 @@
 import psutil
 import os
 import time
-from datetime import datetime, timezone
 
 def get_cpu(wait_interval = 0.5):
     return psutil.cpu_percent(interval=wait_interval)

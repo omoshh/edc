@@ -1,13 +1,13 @@
 from db.database import get_conn, get_name
 import utils
-from datetime import datetime, timezone
+from datetime import datetime
 
 def job():
     cp_av = utils.get_cpu()
     mem = utils.get_mem()
     load_av = utils.get_average()
     network = utils.get_bandwidth()
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
     table_name = get_name()
     query = f"""
         INSERT INTO {table_name} 
