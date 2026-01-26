@@ -22,10 +22,9 @@ with st.sidebar:
     st.info(f"Refreshes every {selected_label}")
 
 # get metrics from API
-# FIX: hardcoded localhost
 def get_metrics():
     try:
-        response = requests.get("http://localhost:8000/metrics")
+        response = requests.get(st.secrets["API_METRICS"])
         response.raise_for_status() 
         df = pd.DataFrame([response.json()])
         df['timestamp'] = pd.to_datetime(df['timestamp'])
