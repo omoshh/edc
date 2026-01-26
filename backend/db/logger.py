@@ -1,7 +1,5 @@
 from .database import get_conn, get_name
 from backend import utils
-import schedule
-import time
 from datetime import datetime, timezone
 
 def job():
@@ -24,10 +22,3 @@ def job():
             print(f"Logged {now}: CPU {cp_av}%, RAM {mem}%, Load Average (1m) {load_av}, Network bandwidth {network}MBps") 
     except Exception as e:
         print(f"Logging failed: {e}")
-    
-print("logger starting... waiting for first entry")
-schedule.every(30).seconds.do(job)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
