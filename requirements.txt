@@ -7,4 +7,3 @@ dotenv[standard]    # managing .env file
 # frond-end
 streamlit[standard] 
 pandas[standard]
-plotly[standard]

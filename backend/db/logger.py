@@ -21,11 +21,11 @@ def job():
             with conn.cursor() as cur:
                 cur.execute(query, (cp_av, mem, load_av, network, now))
             conn.commit()
-            print(f"Logged {now}: CPU {cp_av}%, RAM {mem}%, Load Average (1m) {load_av}%, Network bandwidth {network}MBps") 
+            print(f"Logged {now}: CPU {cp_av}%, RAM {mem}%, Load Average (1m) {load_av}, Network bandwidth {network}MBps") 
     except Exception as e:
         print(f"Logging failed: {e}")
     
-print("logger starting... waiting for first minute")
+print("logger starting... waiting for first entry")
 schedule.every(30).seconds.do(job)
 
 while True:
