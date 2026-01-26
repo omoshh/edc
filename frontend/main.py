@@ -24,12 +24,13 @@ with st.sidebar:
     st.info(f"Refreshes every {selected_label}")
 
 # get metrics from API
+# FIX: hardcoded localhost
 def get_metrics():
     try:
         response = requests.get("http://localhost:8000/metrics")
         response.raise_for_status() 
         df = pd.DataFrame([response.json()])
-        df['datetime'] = pd.to_datetime(df['datetime'])
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
         return df
     except Exception as e:
         st.error(f"Failed to fetch data: {e}")
@@ -46,11 +47,11 @@ def metrics():
         latest = df.iloc[0] 
 
         col1.metric(label="CPU", value=f"{latest['cpu_usage']}%")
-        col2.metric(label="Memory", value=f"{latest['memory_usage']}%")
-        col3.metric(label="Load Average", value=f"{latest['load_average']}%")
+        col2.metric(label="Memory", value=f"{latest['ram_usage']}%")
+        col3.metric(label="Load Average", value=f"{latest['load_average']}")
         col4.metric(label="Network Bandwidth", value=f"{latest['network_bandwidth']}Mb/s")
         d1, = st.columns(1)
-        time_string = latest['datetime'].strftime("%H:%M:%S")
+        time_string = latest['timestamp'].strftime("%H:%M:%S")
         d1.metric(label="Measured at", value=time_string)
     else:
         st.warning("No data available. Check if the backend is running.")
