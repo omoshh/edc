@@ -7,8 +7,6 @@ import datetime
 st.set_page_config(page_title="System Metrics", layout="wide")
 
 REFRESH_OPTIONS = {
-    "5s": 5,
-    "10s": 10,
     "30s": 30,
     "1m": 60
 }
@@ -40,7 +38,6 @@ def get_metrics():
 @st.fragment(run_every=freq_ms)
 def metrics():
     st.header("Current system metrics:")
-    # refresh metrics every 5 seconds
     df = get_metrics()
     if not df.empty:
         col1, col2, col3, col4 = st.columns(4)

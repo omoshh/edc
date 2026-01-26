@@ -2,14 +2,14 @@ from .database import get_conn, get_name
 from backend import utils
 import schedule
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 def job():
     cp_av = utils.get_cpu()
     mem = utils.get_mem()
     load_av = utils.get_average()
     network = utils.get_bandwidth()
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     table_name = get_name()
     query = f"""
         INSERT INTO {table_name} 
@@ -26,7 +26,7 @@ def job():
         print(f"Logging failed: {e}")
     
 print("logger starting... waiting for first minute")
-schedule.every(1).minutes.do(job)
+schedule.every(30).seconds.do(job)
 
 while True:
     schedule.run_pending()
