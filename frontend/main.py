@@ -87,9 +87,9 @@ st.header("Request metrics from a time interval:")
 left_col, right_col = st.columns(2)
 with left_col:  
     today_midnight = datetime.datetime.now(datetime.timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    start = st.datetime_input("Choose start", value=today_midnight, format="DD/MM/YYYY", max_value="now")
+    start = st.datetime_input("Choose start", value=today_midnight, format="DD.MM.YYYY", max_value="now")
 with right_col:
-    end = st.datetime_input("Choose end", value="now", format="DD/MM/YYYY", max_value="now")
+    end = st.datetime_input("Choose end", value="now", format="DD.MM.YYYY", max_value="now")
 
 if st.button("Submit", type="primary"):
     if start and end:
@@ -115,6 +115,12 @@ if st.session_state.df_metrics is not None and not st.session_state.df_metrics.e
         with tab1:
             st.line_chart(renamed_data, height=300)
         with tab2:
-            st.dataframe(renamed_data, use_container_width=True)
+            st.dataframe(renamed_data, width="stretch",
+                         column_config={
+                             "timestamp" : st.column_config.DatetimeColumn(
+                                "Time",
+                                format="DD.MM.YYYY, HH:MM"
+                             )
+                         })
     else:
         st.info("Select metrics to visualize.")
