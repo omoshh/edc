@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 
 from db.database import get_conn, get_name
-from db import setup_db
+from db.setup_db import init_db
 from db.logger import job
 
 def run_logger():
@@ -23,7 +23,7 @@ def run_logger():
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    setup_db()
+    init_db()
     # set up logger in daemon thread
     logger_thread = threading.Thread(target=run_logger, daemon=True)
     logger_thread.start()
@@ -77,4 +77,6 @@ def get_metrics_range(start: str, end: str):
         return None
 
 if __name__ == "__main__":
+    host = os.getenv("API_HOST", "0.0.0.0")
+    port = int(os.getenv("API_PORT", 8000))
     uvicorn.run(app, host=host, port=port)

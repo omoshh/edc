@@ -7,7 +7,7 @@ load_dotenv()
 VARS = {
     "db_user": os.getenv('DB_USER', 'postgres'),
     "db_pass": os.getenv('DB_PASS'),
-    "db_host": os.getenv('DB_HOST', 'localhost'),
+    "db_host": os.getenv('DB_HOST', 'db'),
     "db_port": os.getenv('DB_PORT', '5432'),
     "db_name": os.getenv('DB_NAME', 'metrics')
 }

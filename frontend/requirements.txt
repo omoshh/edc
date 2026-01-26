@@ -1,0 +1,4 @@
+# frond-end
+streamlit[standard] 
+pandas[standard]
+dotenv[standard]    # managing .env file

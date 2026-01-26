@@ -1,5 +1,5 @@
-from .database import get_conn, get_name
-from backend import utils
+from db.database import get_conn, get_name
+import utils
 from datetime import datetime, timezone
 
 def job():

@@ -2,6 +2,14 @@ import streamlit as st
 import pandas as pd
 import requests
 import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+ENV_VARS = {
+    "metrics_api" : os.getenv("API_METRICS", "http://backend:8000/metrics"),
+    "range_api" : os.getenv("API_RANGE", "http://backend:8000/metrics/range")
+}
 
 st.set_page_config(page_title="System Metrics", layout="wide")
 
@@ -26,14 +34,14 @@ with st.sidebar:
         options=list(REFRESH_OPTIONS.keys()),
         index=0
     )
-    freq_ms = REFRESH_OPTIONS[selected_label]
+    update_frequency = REFRESH_OPTIONS[selected_label]
     st.info(f"Refreshes every {selected_label}")
 
 # get metrics from API
-@st.cache_data(ttl=300)
+# st.cache_data(ttl=300)
 def get_metrics():
     try:
-        response = requests.get(st.secrets["API_METRICS"])
+        response = requests.get(ENV_VARS['metrics_api'])
         response.raise_for_status() 
         df = pd.DataFrame([response.json()])
         df['timestamp'] = pd.to_datetime(df['timestamp'])
@@ -43,23 +51,25 @@ def get_metrics():
         return pd.DataFrame()
 
 # main ui
-@st.fragment(run_every=freq_ms)
+@st.fragment(run_every=update_frequency)
 def metrics():
     st.header("Current system metrics:")
     df = get_metrics()
-    if not df.empty:
-        col1, col2, col3, col4 = st.columns(4)
-        latest = df.iloc[0] 
+    if df is not None and not df.empty:
+        try:
+            col1, col2, col3, col4 = st.columns(4)
+            latest = df.iloc[0] 
 
-        col1.metric(label="CPU", value=f"{latest['cpu_usage']}%")
-        col2.metric(label="Memory", value=f"{latest['ram_usage']}%")
-        col3.metric(label="Load Average", value=f"{latest['load_average']}")
-        col4.metric(label="Network Bandwidth", value=f"{latest['network_bandwidth']}Mb/s")
-        d1, = st.columns(1)
-        time_string = latest['timestamp'].strftime("%H:%M:%S")
-        d1.metric(label="Measured at", value=time_string)
+            col1.metric(label="CPU", value=f"{latest['cpu_usage']}%")
+            col2.metric(label="Memory", value=f"{latest['ram_usage']}%")
+            col3.metric(label="Load Average", value=f"{latest.get('load_average', 'N/A')}")
+            col4.metric(label="Network", value=f"{latest.get('network_bandwidth', 0)} Mb/s")
+            
+            st.caption(f"Last updated: {latest['timestamp'].strftime('%H:%M:%S')}")
+        except Exception as e:
+            st.error(f"Error parsing metrics: {e}")
     else:
-        st.warning("No data available. Check if the backend is running.")
+        st.warning("Waiting for data from backend... Check if the database is ready.")
 metrics()
 
 # request from range
@@ -69,7 +79,7 @@ def get_metrics_in_range(start, end):
         "end": str(end)
     }
     try:
-        response = requests.get(st.secrets["API_RANGE"], params=par)
+        response = requests.get(ENV_VARS['range_api'], params=par)
         response.raise_for_status()
         json_data = response.json().get("data", [])
         if not json_data:
