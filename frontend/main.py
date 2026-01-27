@@ -15,6 +15,7 @@ st.set_page_config(page_title="System Metrics", layout="wide")
 
 if "df_metrics" not in st.session_state:
     st.session_state.df_metrics = None
+    st.session_state.last_x_metrics = None
 
 REFRESH_OPTIONS = {
     "30s": 30,
@@ -91,7 +92,57 @@ def get_metrics_in_range(start, end):
         st.error(f"Failed to fetch data: {e}")
         return pd.DataFrame()
     
-# ui
+# metrics from last 5m, 15m, 30m, 1h, 3h, 1d
+st.divider()
+st.header("Request metrics from the last...")
+# define columns for buttons
+c1, c2, c3, c4, c5, c6 = st.columns(6)
+COLS = [c1, c2, c3, c4, c5, c6]
+# define intervals
+INTERVALS = {
+    "5m": datetime.timedelta(minutes=5),
+    "15m": datetime.timedelta(minutes=15),
+    "30m": datetime.timedelta(minutes=30),
+    "1h": datetime.timedelta(hours=1),
+    "3h": datetime.timedelta(hours=3),
+    "1d": datetime.timedelta(days=1)
+}
+interval_labels = list(INTERVALS.keys())
+for col, label in zip(COLS, interval_labels):
+    with col:
+        if st.button(label, use_container_width=True):
+            end_time = datetime.datetime.now()
+            start_time = end_time - INTERVALS[label]
+            with st.spinner(f"Fetching last {label}..."):
+                st.session_state.last_x_metrics = get_metrics_in_range(start_time, end_time)
+            st.rerun()
+if st.session_state.last_x_metrics is not None and not st.session_state.last_x_metrics.empty:
+    data = st.session_state.last_x_metrics
+    chart_data = data.set_index('timestamp')
+    
+    options = list(METRICS.keys())
+    selected_labels = st.multiselect("Metrics", options=options, default=options)
+    selected_columns = [METRICS[label] for label in selected_labels]
+    if selected_columns:
+        filtered_data = chart_data[selected_columns]
+        # display metric names instead of db column names
+        reverse_metrics = {v: k for k, v in METRICS.items()}
+        renamed_data = filtered_data.rename(columns=reverse_metrics)
+        tab1, tab2 = st.tabs(["Chart", "Dataframe"])
+        with tab1:
+            st.line_chart(renamed_data, height=300)
+        with tab2:
+            st.dataframe(renamed_data, width="stretch",
+                         column_config={
+                             "timestamp" : st.column_config.DatetimeColumn(
+                                "Time",
+                                format="DD.MM.YYYY, HH:mm"
+                             )
+                         })
+    else:
+        st.info("Select metrics to visualize.")
+
+# metrics from user-defined range
 st.divider()
 st.header("Request metrics from a time interval:")
 left_col, right_col = st.columns(2)

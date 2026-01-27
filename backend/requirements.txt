@@ -3,3 +3,5 @@ psutil[standard]    # for getting metrics
 psycopg[binary]     # postgresql
 schedule[standard]  # for logging into db
 dotenv[standard]    # managing .env file
+pydantic[standard]
+typing[standard]
