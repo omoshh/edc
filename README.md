@@ -5,7 +5,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.25+-FF4B4B.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg)
 
-edc is a lightweight system monitoring tool that displays real-time metrics through a web interface. It uses **FastAPI** to serve data, **PostgreSQL** for storage, and **Streamlit** for a reactive, user-friendly frontend.
+edc is a system monitoring tool that displays real-time metrics through a web interface. It uses **FastAPI** to serve data, **PostgreSQL** for storage, and **Streamlit** for a reactive, user-friendly frontend.
 
 ## Features
 * 📈 **Real-time Monitoring**: Track CPU, RAM, and Network usage.
