@@ -1,6 +1,7 @@
 import psycopg
 import time
-from db.database import get_conn, get_name
+import logging
+from backend.db.database import get_conn, get_name
 
 def init_db():
     table_name = get_name()
@@ -18,10 +19,10 @@ def init_db():
             with get_conn() as conn:
                 with conn.cursor() as cur:
                     cur.execute(q)
-                    print("Table created successfully!")
+                    logging.info("Table created successfully!")
                 return 
         except psycopg.OperationalError:
-            print(f"Database not ready... (attempt {i+1}/10)")
+            logging.info(f"Database not ready... (attempt {i+1}/10)")
             time.sleep(2)
 
 if __name__ == "__main__":
