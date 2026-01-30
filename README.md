@@ -60,6 +60,7 @@ Run tests from the project root:
 python3 -m test.healthcheck
 ```
 Available options:
-    -q, --quiet : Minimal output (only results).
-    -v, --verbose : Detailed output (list of all tests).
+- -q, --quiet : Minimal output (only results).
+- -v, --verbose : Detailed output (list of all tests).
+
 By default, it runs with standard verbosity.
