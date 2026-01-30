@@ -57,7 +57,7 @@ docker compose up --build
 ## Testing
 Run tests from the project root:
 ```bash
-python -m test.healthcheck
+python3 -m test.healthcheck
 ```
 Available options:
     -q, --quiet : Minimal output (only results).
