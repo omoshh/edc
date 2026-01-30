@@ -31,7 +31,15 @@ edc
 │   ├── Dockerfile          - frontend container definition
 │   └── requirements.txt
 ├── docker-compose.yaml     - docker orchestration manifest
-└── README.md
+├── README.md
+└── test                    - unit tests
+    ├── api_test.py
+    ├── api_validation_test.py
+    ├── healthcheck.py
+    ├── __init__.py
+    ├── logger_test.py
+    ├── setup_db_test.py
+    └── utils_test.py
 ```
 ## How to use it?
 **Note: Linux/MacOS only support**
@@ -45,3 +53,13 @@ edc
 docker compose up --build
 ```
 5. Access the UI: By default, the dashboard is available at [http://localhost:8501](http://localhost:8501)
+
+## Testing
+Run tests from the project root:
+```bash
+python -m test.healthcheck
+```
+Available options:
+    -q, --quiet : Minimal output (only results).
+    -v, --verbose : Detailed output (list of all tests).
+By default, it runs with standard verbosity.
