@@ -4,6 +4,7 @@ import os
 import schedule
 import time
 import threading
+import logging
 
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -12,12 +13,12 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 
-from db.database import get_conn, get_name
-from db.setup_db import init_db
-from db.logger import job
+from backend.db.database import get_conn, get_name
+from backend.db.setup_db import init_db
+from backend.db.logger import job
 
 def run_logger():
-    print("Background logger started...")
+    logging.info("Background logger started...")
     job() 
     schedule.every(30).seconds.do(job)
     while True:
@@ -26,6 +27,10 @@ def run_logger():
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
+    # not to get into infinite while loop while testing
+    if os.getenv("TESTING"):
+        yield
+        return
     init_db()
     # set up logger in daemon thread
     logger_thread = threading.Thread(target=run_logger, daemon=True)
@@ -33,7 +38,7 @@ async def lifespan(app: fastapi.FastAPI):
     
     yield
     
-    print("Shutting down...")
+    logging.info("Shutting down...")
 
 class Metric(BaseModel):
     timestamp: datetime
@@ -90,8 +95,7 @@ def get_metrics():
                     "network_bandwidth": r["network_bandwidth"],
                 }
     except Exception as e:
-        print(f"Database error: {e}")
-        print(f"API Detailed Error: {e}") 
+        logging.error(f"Database error: {e}")
         raise fastapi.HTTPException(500, detail=str(e))
 
 @app.get("/metrics/range",
@@ -121,7 +125,7 @@ def get_metrics_range(start: str, end: str):
                     ]
                 }
     except Exception as e:
-        print(f"Database error: {e}")
+        logging.error(f"Database error: {e}")
         return {"data": []}
 
 if __name__ == "__main__":
