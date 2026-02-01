@@ -7,7 +7,8 @@ import os
 # 1. Set the env variable BEFORE the import to ensure lifespan logic sees it
 os.environ["TESTING"] = "1"
 
-import backend.api as api_module 
+import backend.api as api_module
+
 
 class TestMetricsAPI(unittest.TestCase):
     def setUp(self):
@@ -17,19 +18,19 @@ class TestMetricsAPI(unittest.TestCase):
             "cpu_usage": 25.5,
             "ram_usage": 60.2,
             "load_average": 1.5,
-            "network_bandwidth": 100.0
+            "network_bandwidth": 100.0,
         }
 
     @patch("backend.api.get_conn")
     @patch("backend.api.get_name")
     def test_get_metrics_success(self, mock_get_name, mock_get_conn):
         mock_get_name.return_value = "metrics_table"
-        
+
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_get_conn.return_value.__enter__.return_value = mock_conn
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
-        
+
         mock_cursor.fetchone.return_value = self.mock_row
 
         response = self.client.get("/metrics")
@@ -53,7 +54,7 @@ class TestMetricsAPI(unittest.TestCase):
     @patch("backend.api.get_name")
     def test_get_metrics_range_success(self, mock_get_name, mock_get_conn):
         mock_get_name.return_value = "metrics_table"
-        
+
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_get_conn.return_value.__enter__.return_value = mock_conn
@@ -75,6 +76,7 @@ class TestMetricsAPI(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["data"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

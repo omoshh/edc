@@ -17,13 +17,15 @@ from backend.db.database import get_conn, get_name
 from backend.db.setup_db import init_db
 from backend.db.logger import job
 
+
 def run_logger():
     logging.info("Background logger started...")
-    job() 
+    job()
     schedule.every(30).seconds.do(job)
     while True:
         schedule.run_pending()
         time.sleep(1)
+
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
@@ -35,10 +37,11 @@ async def lifespan(app: fastapi.FastAPI):
     # set up logger in daemon thread
     logger_thread = threading.Thread(target=run_logger, daemon=True)
     logger_thread.start()
-    
+
     yield
-    
+
     logging.info("Shutting down...")
+
 
 class Metric(BaseModel):
     timestamp: datetime
@@ -47,32 +50,36 @@ class Metric(BaseModel):
     load_average: float
     network_bandwidth: float
 
+
 class MetricRangeResponse(BaseModel):
     data: List[Metric]
+
 
 app = fastapi.FastAPI(
     title="Metrics API",
     description="API for getting metrics from database",
     version="1.0.0",
-    lifespan=lifespan
-    )
+    lifespan=lifespan,
+)
 
 load_dotenv()
-host = os.getenv('API_HOST', '0.0.0.0')
-port = os.getenv('API_PORT', 8000)
+host = os.getenv("API_HOST", "0.0.0.0")
+port = os.getenv("API_PORT", 8000)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/metrics",
+
+@app.get(
+    "/metrics",
     summary="Last metric",
     description="Returns last entry from database",
-    response_model=Metric
-    )
+    response_model=Metric,
+)
 def get_metrics():
     name = get_name()
     query = f"""
@@ -98,11 +105,13 @@ def get_metrics():
         logging.error(f"Database error: {e}")
         raise fastapi.HTTPException(500, detail=str(e))
 
-@app.get("/metrics/range",
+
+@app.get(
+    "/metrics/range",
     summary="Metrics from a period",
     description="Returns metrics from start to end",
-    response_model=MetricRangeResponse
-    )
+    response_model=MetricRangeResponse,
+)
 def get_metrics_range(start: str, end: str):
     table = get_name()
     query = f"SELECT * FROM {table} WHERE timestamp BETWEEN %s AND %s ORDER BY timestamp ASC"
@@ -127,6 +136,7 @@ def get_metrics_range(start: str, end: str):
     except Exception as e:
         logging.error(f"Database error: {e}")
         return {"data": []}
+
 
 if __name__ == "__main__":
     host = os.getenv("API_HOST", "0.0.0.0")

@@ -3,6 +3,7 @@ import backend.utils as utils
 from datetime import datetime
 import logging
 
+
 def job():
     cp_av = utils.get_cpu()
     mem = utils.get_mem()
@@ -20,6 +21,8 @@ def job():
             with conn.cursor() as cur:
                 cur.execute(query, (cp_av, mem, load_av, network, now))
             conn.commit()
-            logging.info(f"Logged {now}: CPU {cp_av}%, RAM {mem}%, Load Average (1m) {load_av}, Network bandwidth {network}MBps") 
+            logging.info(
+                f"Logged {now}: CPU {cp_av}%, RAM {mem}%, Load Average (1m) {load_av}, Network bandwidth {network}MBps"
+            )
     except Exception as e:
         logging.error(f"Logging failed: {e}")
