@@ -42,7 +42,7 @@ edc
     └── utils_test.py
 ```
 ## How to use it?
-**Note: Linux/MacOS only support**
+**Note: Linux/MacOS only support.**
 1. Make sure **Docker** and **Docker Compose** are installed.
 2. Download the necessary files: You only need the *docker-compose.yml* and the *.env.example* file.
 
@@ -51,6 +51,7 @@ edc
 cp .env.example .env
 ```
 Open .env and adjust any keys or ports if necessary.
+
 4. Launch the application in the background:
 ```bash
 docker-compose up -d
