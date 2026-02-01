@@ -16,7 +16,7 @@ services:
       retries: 5
 
   backend:
-    image: omoshh/edc-backend:v1.0.1
+    image: omoshh/edc-backend:latest
     container_name: edc_backend
     privileged: true
     env_file: .env
@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: omoshh/edc-frontend:v1.0.1
+    image: omoshh/edc-frontend:latest
     container_name: edc_frontend
     env_file: .env
     environment:

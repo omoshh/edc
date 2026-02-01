@@ -44,22 +44,33 @@ edc
 ## How to use it?
 **Note: Linux/MacOS only support**
 1. Make sure **Docker** and **Docker Compose** are installed.
-2. Clone this repository and go to the direcotory.
+2. Download the necessary files: You only need the *docker-compose.yml* and the *.env.example* file.
+
+3. Configure Environment Variables: Create a .env file from the example:
+```bash
+cp .env.example .env
+```
+Open .env and adjust any keys or ports if necessary.
+4. Launch the application in the background:
+```bash
+docker-compose up -d
+```
+5. Access the UI: By default, the dashboard is available at [http://localhost:8501](http://localhost:8501)
+6. Stop the app with
+```bash
+docker-compose down
+```
+
+## Testing
+1. Clone this repository and go to the direcotory.
 ```bash
  git clone https://github.com/omoshh/edc && cd edc
 ```
-4. Run with Docker Compose.
+2. Install dependencies:
 ```bash
-docker compose up --build
+ pip install -r backend/requirements.txt -r frontend/requirements.txt pytest
 ```
-5. Access the UI: By default, the dashboard is available at [http://localhost:8501](http://localhost:8501)
-
-## Testing
-Run tests from the project root:
+3. Run tests from the project root:
 ```bash
-python -m test.healthcheck
+pytest test/
 ```
-Available options:
-    -q, --quiet : Minimal output (only results).
-    -v, --verbose : Detailed output (list of all tests).
-By default, it runs with standard verbosity.
