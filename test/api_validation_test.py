@@ -17,19 +17,18 @@ class TestAPIValidation(unittest.TestCase):
         """Test that missing query parameters return 422 Unprocessable Entity"""
         # Missing 'end' parameter
         response = self.client.get("/metrics/range?start=2024-01-01T00:00:00")
-        self.assertEqual(response.status_code, 422) 
-        
+        self.assertEqual(response.status_code, 422)
+
         # Missing 'start' parameter
         response = self.client.get("/metrics/range?end=2024-01-01T00:00:00")
         self.assertEqual(response.status_code, 422)
 
-
-    @patch("backend.api.get_conn") 
+    @patch("backend.api.get_conn")
     def test_range_invalid_date_format(self, mock_get_conn):
-        """Test how the API handles non-date strings""" # mock db
+        """Test how the API handles non-date strings"""  # mock db
         params = {"start": "not-a-date", "end": "something-else"}
         response = self.client.get("/metrics/range", params=params)
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["data"], [])
 
@@ -55,6 +54,7 @@ class TestAPIValidation(unittest.TestCase):
         response = self.client.get("/this/route/does/not/exist")
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["detail"], "Not Found")
+
 
 if __name__ == "__main__":
     unittest.main()

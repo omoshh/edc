@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime
 from backend.db.logger import job
 
+
 class TestLogger(unittest.TestCase):
 
     @patch("backend.db.logger.get_name")
@@ -18,7 +19,7 @@ class TestLogger(unittest.TestCase):
         mock_utils.get_bandwidth.return_value = 1.2
         fixed_now = datetime(2024, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = fixed_now
-        
+
         # mock db setup
         mock_get_name.return_value = "test_table"
         mock_conn = MagicMock()
@@ -35,7 +36,7 @@ class TestLogger(unittest.TestCase):
         params = execute_args[1]
 
         self.assertIn("INSERT INTO test_table", query)
-        
+
         # Check if params are given in correct oreder
         expected_params = (10.0, 20.0, 0.5, 1.2, fixed_now)
         self.assertEqual(params, expected_params)
@@ -53,6 +54,7 @@ class TestLogger(unittest.TestCase):
             job()
         except Exception as e:
             self.fail(f"job() raised {type(e).__name__} instead of catching it!")
+
 
 if __name__ == "__main__":
     unittest.main()
