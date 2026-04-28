@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: ammonia-edc-edc-test
+  annotations:
+    # This triggers Kube-DC to create an HTTPS route and a Let's Encrypt cert
+    service.nlb.kube-dc.com/expose-route: "https"
+spec:
+  type: LoadBalancer
+  selector:
+    app: edc-frontend
+  ports:
+    - protocol: TCP
+      port: 443 # Public port
+      targetPort: 8501 # Streamlit container port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edc-frontend
+  namespace: ammonia-edc-edc-test
+spec:
+  selector:
+    matchLabels:
+      app: edc-frontend
+  template:
+    metadata:
+      labels:
+        app: edc-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: omoshh/edc-frontend:latest
+          env:
+            - name: STREAMLIT_SERVER_PORT
+              value: "8501"
+            - name: STREAMLIT_SERVER_ADDRESS
+              value: "0.0.0.0"
+          # Reference your secret/configmap for .env vars here
+          envFrom:
+            - configMapRef:
+                name: edc-config
+          ports:
+            - containerPort: 8501

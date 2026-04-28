@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edc-backend
+  namespace: ammonia-edc-edc-test
+spec:
+  selector:
+    matchLabels:
+      app: edc-backend
+  template:
+    metadata:
+      labels:
+        app: edc-backend
+    spec:
+      containers:
+        - name: backend
+          image: omoshh/edc-backend:latest
+          securityContext:
+            privileged: true # required for metric pulling
+          envFrom:
+            - configMapRef:
+                name: edc-config
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: proc
+              mountPath: /proc
+              readOnly: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
