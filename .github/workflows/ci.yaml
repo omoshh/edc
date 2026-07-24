@@ -67,3 +67,25 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  update-gitops:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout gitops repo
+        uses: actions/checkout@v6
+        with:
+          repository: omoshh/gitops-lab
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}
+      - name: Change image tag
+        run: |
+          sed -i -E "s|(image:[[:space:]]*).*edc-backend.*|\1ghcr.io/omoshh/edc-backend:sha-${GITHUB_SHA}|" apps/edc-monitor/backend-deployment.yaml
+          grep -q "ghcr.io/omoshh/edc-backend:sha-${GITHUB_SHA}" apps/edc-monitor/backend-deployment.yaml \
+            || { echo "::error::image line not updated"; exit 1; }
+      - name: Commit and push
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "cibot@placeholder.mail"
+          git add -A
+          git diff --cached --quiet && { echo "no change, skipping"; exit 0; }
+          git commit -m "chore: bump edc-backend to sha-${GITHUB_SHA}"
+          git push
